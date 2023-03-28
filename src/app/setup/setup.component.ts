@@ -18,7 +18,7 @@ export class SetupComponent {
     this.loaded = true
   }
   newdb=""
-  addNewDB(){
+  async addNewDB(){
     try {
       let newName = this.newdb.trim().replace(/\s+/g, '-').toLowerCase()
       if(!newName){throw new Error("Empty")}
@@ -32,6 +32,7 @@ export class SetupComponent {
           settings:{}
         })
         this.ds.editDBList(this.dbSettings)
+        this.ds.seedDefaultRecord(newName)
       }else{
         throw new Error("Database already exists")
       }      

@@ -33,9 +33,6 @@ export class DatabaseService {
     if(rec){return rec}else{throw new Error("404 DB Not Exists")}
   }
 
-  getPouch(){    
-  }
-
   async testDB(dbName:string){
     let dbdets = this.getDBDetails(dbName)
     let localDB  = new PouchDB(dbName) 
@@ -52,5 +49,69 @@ export class DatabaseService {
     let remoteDB = new PouchDB(dbdets.sync)
     localDB.sync(remoteDB)
   }
+
+
+  getNewRecord(){
+    let newRec:any = {
+      _attachments:{},
+      schema:"",
+      data: {},
+      meta:{
+        createdOnUTC:"",
+        updatedOnUTC:"",
+        createdDevice:"",
+      },
+      settings : {
+        secure: false,
+      }
+    }
+    return newRec
+  }
+  addDefaultDynamicData(rec:any){
+    let newRec = {...rec}
+    let getCurrentUTCTS = ()=>{
+      
+    } 
+    newRec.meta.createdDevice = window.navigator.userAgent
+  }
+  defualtSchemas(){
+    const schemas = [
+      {
+        "_id":"schema1",
+        schema:"data-schema",
+        data:{
+          name:"data-schema",
+          label:"Data Schema",
+          schema:{
+            
+          },
+          primaryKey:[],
+          validate:"",
+
+        },
+
+      }
+
+    ]
+  }
+
+  async seedDefaultRecord(dbName:any){
+    let defaultDocs = [
+      {
+        _id: "data-schema-settings",
+        schema:"data-schema-settings",
+        data:{
+          list:[
+            {name:"data-schema",label:"Data Schema"},
+            {name:"custom-config-doc",label:"Config Doc"},
+          ]
+        },
+        tags:["admin","added-by-system"],
+      }
+    ]
+    let localDB  = new PouchDB(dbName) 
+    await localDB.bulkDocs(defaultDocs)
+  }
+
 
 }
