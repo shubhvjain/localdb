@@ -74,27 +74,6 @@ export class DatabaseService {
     } 
     newRec.meta.createdDevice = window.navigator.userAgent
   }
-  defualtSchemas(){
-    const schemas = [
-      {
-        "_id":"schema1",
-        schema:"data-schema",
-        data:{
-          name:"data-schema",
-          label:"Data Schema",
-          schema:{
-            
-          },
-          primaryKey:[],
-          validate:"",
-
-        },
-
-      }
-
-    ]
-  }
-
   async seedDefaultRecord(dbName:any){
     let defaultDocs = [
       {
@@ -113,5 +92,35 @@ export class DatabaseService {
     await localDB.bulkDocs(defaultDocs)
   }
 
+  async dbCreate(dbName:any,newRecord:any){}
+  async dbGet(dbName:any,id:any){
+    let localDB  = new PouchDB(dbName) 
+    let data = await localDB.get(id)   
+    return data 
+  }
+  async dbUpdate(dbName:any,id:any,updatedDoc:any){}
+  async dbDelete(dbName:any,id:any){}
+  async dbSearch(dbname:any,query:any){}
 
+
+  loadDataSchemas(dbName:any,schemaName:any){
+    const defaultSchema = [
+      {
+        "_id":"schema1",
+        schema:"data-schema",
+        data:{
+          name:"data-schema",
+          label:"Data Schema",
+          schema:{
+            
+          },
+          layout:{ },
+          
+          primaryKey:["name"],
+          validate:"",
+        },
+      }
+
+    ]
+  }
 }

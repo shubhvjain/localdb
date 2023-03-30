@@ -15,7 +15,7 @@ export class ViewerComponent {
   ngOnInit() {
     this.activatedRoute.params.subscribe(async (params: Params) => {
       //this.selectedPageId = params['link']; 
-      console.log(params)
+      // console.log(params)
       this.processParams(params)
     });
   }
@@ -24,7 +24,7 @@ export class ViewerComponent {
     try {
       let dbcheck = this.ds.getDBDetails(params.dbname)
       if(dbcheck){
-        console.log(dbcheck)
+        //console.log(dbcheck)
         this.dbName = params.dbname
         this.loaded=true  
       }else{
@@ -34,5 +34,8 @@ export class ViewerComponent {
       console.log(error)
       this.displayMsg = error.message
     }
+  }
+  updateData(data:any){
+    console.log(data)
   }
 }
