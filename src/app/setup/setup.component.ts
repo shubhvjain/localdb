@@ -18,7 +18,7 @@ export class SetupComponent {
     this.loaded = true
   }
   newdb=""
-  addNewDB(){
+  async addNewDB(){
     try {
       let newName = this.newdb.trim().replace(/\s+/g, '-').toLowerCase()
       if(!newName){throw new Error("Empty")}
@@ -28,11 +28,11 @@ export class SetupComponent {
         this.dbSettings.list.push({
           name:newName,
           createdOn: new Date().toUTCString(),
-          sync:[""],
+          sync:"",
           settings:{}
         })
-        console.log(this.dbSettings)
         this.ds.editDBList(this.dbSettings)
+        this.ds.seedDefaultRecord(newName)
       }else{
         throw new Error("Database already exists")
       }      
@@ -42,8 +42,11 @@ export class SetupComponent {
 
   }
   exportSettings(){}
-  importSteeingsFromJSON(){
+  importSettingsFromJSON(){
     // file must first be validated, check list for duplicates
     // only new db must be added, 
+  }
+  saveChanges(){
+    this.ds.editDBList(this.dbSettings)
   }
 }

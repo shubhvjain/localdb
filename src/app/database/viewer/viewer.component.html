@@ -1,1 +1,11 @@
-<p>this is where the magic happens</p>
+<div *ngIf="loaded">
+  <app-new-record [dbName]="dbName"></app-new-record> 
+  
+  <details>
+    <summary>Preview</summary>
+    <app-form-preview></app-form-preview>
+
+  </details>
+  
+</div>
+<div *ngIf="!loaded"> {{displayMsg}}</div>
