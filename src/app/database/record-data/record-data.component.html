@@ -1,8 +1,41 @@
-Record data
-<json-form  (onDataChange)="updateData($event)" ></json-form>
-<details>
-  <summary>Options</summary>
-  <h3>Settings</h3>
-  <json-form  (onDataChange)="updateData($event)" ></json-form>
-  <h3>Attachments</h3>
-</details>
+
+<div *ngIf="message.length>0">
+  {{message}}
+</div>
+<div *ngIf="loaded">
+  <h3>Add a new record</h3>
+  <select (change)="selectSchema($event)">
+    <option value="">Select a schema</option>
+    <option *ngFor="let i of schemaList" value="{{i['name']}}">{{i['label']}}</option>
+  </select>
+    <button (click)="test()">Test</button>
+    <br>
+</div>
+<div *ngIf="!loaded">Loading...</div>
+
+
+
+<div class="row">
+  <div class="col-8 mx-auto">
+    <div *ngIf="loaded">
+
+      <div *ngIf="mode=='new'">
+        New rec
+      </div>
+      
+
+      Record data
+      <json-form (onDataChange)="updateData($event)"></json-form>
+      <details>
+        <summary>Options</summary>
+        <h3>Settings</h3>
+        <json-form (onDataChange)="updateData($event)"></json-form>
+        <h3>Attachments</h3>
+      </details>
+
+
+
+    </div>
+    <div *ngIf="!loaded">Loading page</div>
+  </div>
+</div>

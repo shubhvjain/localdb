@@ -1,14 +1,1 @@
-<div *ngIf="message.length>0">
-  {{message}}
-</div>
-<div *ngIf="loaded">
-  <h3>Add a new record</h3>
-  <select (change)="selectSchema($event)">
-    <option value="">Select a schema</option>
-    <option *ngFor="let i of schemaList" value="{{i['name']}}">{{i['label']}}</option>
-  </select>
-    <button (click)="test()">Test</button>
-    <br>
-  <record-data></record-data>
-</div>
-<div *ngIf="!loaded">Loading...</div>
+<record-data [mode]="'new'" [dbName]="dbName" ></record-data>
