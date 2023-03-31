@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-4">
+    JSON Schema
+    <div class="form-group">
+      <label for="exampleFormControlTextarea1">Example textarea</label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" [(ngModel)]="optionString" ></textarea>
+      <button class="btn btn-dark" (click)="showPreview()" >Show preview</button>
+    </div>
+  
+  </div>
+  <div class="col-8">
+    Form
+    <div *ngIf="load">
+      <json-form [options]="option"></json-form>
+    </div>
+  </div>
+</div>

@@ -13,6 +13,9 @@ export class RecordDataComponent {
   @Input() dbId:string
 
   loaded:boolean = true;
+  schemaSelected:boolean = false
+  message = ""
+
   updateData(d:any){}
 
   constructor(private ds : DatabaseService){
@@ -72,11 +75,11 @@ export class RecordDataComponent {
   schemaList = []
   schema = {}
   record = {}
-  message = ""
-  async loadNewRecord(){
+
+  
+  async loadNewRecordForm(){
     try {
       this.schema = {}
-      this.schemaList = []
       this.record = {} 
       await this.loadSchemaList()
     } catch (error) {
@@ -84,14 +87,16 @@ export class RecordDataComponent {
     }
   }
   async loadSchemaList(){
+    this.schemaList = []
     let data:any = await this.ds.dbGet(this.dbName,"data-schema-settings")
     this.schemaList = data['data']['list']
-    console.log(this.schemaList)
   }
-  async selectSchema(schemaValue:any){
+
+  async selectSchemaForNewRecord(schemaValue:any){
     try {
       let newValue = schemaValue['target']['value']
       if(!newValue){throw new Error("Invalid Schema")} 
+      console.log(newValue)
       await this.loadSchema(newValue)
     } catch (error:any) {
       //this.message = error.message
@@ -100,7 +105,46 @@ export class RecordDataComponent {
   async loadSchema(schemaName:any){
     try {
       this.schema = {}
+      this.record = {}
+      this.schemaSelected = false
       
+      const defaultSchemas:any = {
+        "data-schema":{
+          "schema": {
+            "title": "Product",
+            "description": "A product from Acme's catalog",
+            "type": "object",
+            "properties": {
+              "productId": {
+                "description": "Thexzc unique identifier for a product",
+                "type": "integer"
+              },
+              "productName": {
+                "description": "Name xcxcof the product",
+                "type": "string"
+              }
+            },
+            "required": [ "productId", "productName" ]
+          }
+        },
+      //  "custom-config-doc":{}
+      }
+      if(defaultSchemas[schemaName]){
+        this.schemaSelected = false
+        let sch = defaultSchemas[schemaName]['schema']
+        this.schema = {
+          disable_collapse: true,
+          disable_properties: true,
+          no_additional_properties: true,
+          schema:sch
+        } 
+        console.log(this.schema)
+        this.schemaSelected = true
+
+      }else{
+
+      }
+
     } catch (error:any) { 
       //this.message = error.message
     }
@@ -108,7 +152,7 @@ export class RecordDataComponent {
 
   loadMode(){
     if(this.mode=='new'){
-      this.loadNewRecord()
+      this.loadNewRecordForm()
     }
     if(this.mode=='edit'){
 

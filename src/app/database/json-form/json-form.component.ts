@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'json-form',
@@ -28,7 +28,8 @@ export class JsonFormComponent {
     this.editorId = "editor-" + Math.floor(Math.random() * 1000)
   }
   loadForm() {
-    const element = document.getElementById(this.editorId);
+    const element:any = document.getElementById(this.editorId);
+    element.innerHTML=""
      this.editor = new this.JSONEditor(element,this.options )
     this.editor.on('change', () => {
       const value = this.editor.getValue();
@@ -40,18 +41,31 @@ export class JsonFormComponent {
   addFormData(){
     this.editor.setValue(this.data)
   }
+
+  loadPage(){
+    this.loaded = false
+    let ang = this
+    this.loaded = true
+    setTimeout(function(){
+      ang.loadForm()
+      setTimeout(function(){
+        ang.addFormData()
+      },250)
+    },250)
+  }
+
   ngOnInit() {
     try {
-      let ang = this
-      this.loaded = true
-      setTimeout(function(){
-        ang.loadForm()
-        setTimeout(function(){
-          ang.addFormData()
-        },250)
-      },250)
+      this.loadPage()
     } catch (error) {
       console.log(error)
+    }
+  }
+  ngOnChanges(sm: SimpleChanges) {
+    if (sm['options']) {
+      this.options = sm['options'].currentValue 
+      console.log(this.options)
+      this.loadPage()
     }
   }
 
