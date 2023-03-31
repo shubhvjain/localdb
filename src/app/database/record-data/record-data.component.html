@@ -28,6 +28,12 @@
                   <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                 </svg></button>
               </div>
+              <div class="bd-highlight">
+                <button title="Refresh schmea ooptions" class="btn btn-sm" (click)="addNewRecord()"> Add new </button>
+              </div>
+              <div class="bd-highlight">
+                <button title="Sync database" class="btn btn-sm" (click)="syncDB()"> Sync </button>
+              </div>
             </div>
             
           </div>
@@ -36,11 +42,11 @@
         <div *ngIf="schemaSelected">
           <details open>
             <summary>Data</summary>
-            <json-form [options]="schema"  (onDataChange)="updateData($event)"></json-form>
+            <json-form [options]="schema"  (onDataChange)="updateNewFormData('data',$event)"></json-form>
           </details>
           <details>
             <summary>Settings</summary>
-            <json-form [options]="settingsSchema" (onDataChange)="updateData($event)"></json-form>
+            <json-form [options]="settingsSchema" (onDataChange)="updateNewFormData('settings',$event)"></json-form>
           </details>
           <details>
             <summary>Attachments</summary>
