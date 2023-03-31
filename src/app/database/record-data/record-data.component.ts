@@ -20,50 +20,8 @@ export class RecordDataComponent {
 
   constructor(private ds : DatabaseService){
     this.dbName = ""
-    this.mode = "new" // view
+    this.mode = "new" // "view"
     this.dbId = "new"
-   let s =  {
-      disable_collapse: true,
-      disable_properties: true,
-      no_additional_properties: true,
-      schema: {
-        type: "object",
-        title: "Car",
-        properties: {
-          make: {
-            type: "string",
-            enum: [
-              "Toyota",
-              "BMW",
-              "Honda",
-              "Ford",
-              "Chevy",
-              "VW"
-            ]
-          },
-          model: {
-            type: "string"
-          },
-          year: {
-            type: "integer",
-            enum: [
-              1995, 1996, 1997, 1998, 1999,
-              2000, 2001, 2002, 2003, 2004,
-              2005, 2006, 2007, 2008, 2009,
-              2010, 2011, 2012, 2013, 2014
-            ],
-            default: 2008
-          },
-          safety: {
-            type: "integer",
-            format: "rating",
-            maximum: "5",
-            exclusiveMaximum: false,
-            readonly: false
-          }
-        }
-      }
-    }
   }
 
 
@@ -76,11 +34,41 @@ export class RecordDataComponent {
   schema = {}
   record = {}
 
+  settingsSchema = {
+    disable_collapse: true,
+    disable_properties: true,
+    no_additional_properties: true,
+    disable_array_delete_all_rows:false,
+    schema:{
+      "type":"object",
+      "title":"Record Settings",
+      "properties":{
+        "encrypt":{
+          "title":"Encrypt data",
+          "type":"boolean"
+        },
+        "tags":{
+          "title":"Tags",
+          "description":"",
+          "type": "array",
+          "format": "table",
+          "uniqueItems": true,
+          "maxItems":10,
+          "items": {
+            "title":"Tag name",
+            "type": "string",
+          },
+        },
+      }
+    }
+  }
+
   
   async loadNewRecordForm(){
     try {
       this.schema = {}
-      this.record = {} 
+      this.record = {}
+       
       await this.loadSchemaList()
     } catch (error) {
       console.log(error)
@@ -88,6 +76,8 @@ export class RecordDataComponent {
   }
   async loadSchemaList(){
     this.schemaList = []
+    this.schemaSelected = false
+
     let data:any = await this.ds.dbGet(this.dbName,"data-schema-settings")
     this.schemaList = data['data']['list']
   }
@@ -95,7 +85,10 @@ export class RecordDataComponent {
   async selectSchemaForNewRecord(schemaValue:any){
     try {
       let newValue = schemaValue['target']['value']
-      if(!newValue){throw new Error("Invalid Schema")} 
+      if(!newValue){
+        this.schemaSelected=false
+        throw new Error("Invalid Schema")
+      } 
       console.log(newValue)
       await this.loadSchema(newValue)
     } catch (error:any) {
@@ -107,36 +100,97 @@ export class RecordDataComponent {
       this.schema = {}
       this.record = {}
       this.schemaSelected = false
-      
+
       const defaultSchemas:any = {
         "data-schema":{
           "schema": {
-            "title": "Product",
-            "description": "A product from Acme's catalog",
-            "type": "object",
-            "properties": {
-              "productId": {
-                "description": "Thexzc unique identifier for a product",
-                "type": "integer"
+            "type":"object",
+            "title":"New Data schema",
+            "properties":{
+              "name":{
+                "title":"Name",
+                "type":"string"
               },
-              "productName": {
-                "description": "Name xcxcof the product",
-                "type": "string"
-              }
+              "label":{
+                "title":"Schema label",
+                "type":"string"
+              },
+              "structure":{
+                "type":"string",
+                "title":"JSON Schema Structure",
+                "format":"textarea",
+                "default":"{\"schema\":{}}",
+                "options": {
+                  "inputAttributes": {
+                    "rows":10
+                  }
+                }
+              },
+              "dataValidation":{
+                "title":"Data validation method",
+                "type":"string",
+                "format":"textarea",
+                "default":"(data)=>{return data}",
+                "options": {
+                  "inputAttributes": {
+                    "rows":5
+                  }
+                }
+              },
+              "primaryKey":{
+                "title":"Primary keys",
+                "description":"Include 'data.' before a field name",
+                "type": "array",
+                "format": "table",
+                "uniqueItems": true,
+                "items": {
+                  "title":"Field name",
+                  "type": "string",
+                },
+                "default":["_id"]
+              },
+              "view":{
+                "title":"Data view",
+                "type":"object",
+                "properties":{
+                  "short":{
+                    "type":"string",
+                    "format":"textarea",
+                    "default":"",
+                    "options": {"inputAttributes": {"rows":2}}
+                  },
+                  "full":{
+                    "type":"string",
+                    "format":"textarea",
+                    "default":"",
+                    "options": {"inputAttributes": {"rows":5}}
+                  }
+                }
+              },
+              "doc":{
+                "title":"Documentation",
+                "type":"string",
+                "format":"textarea",
+                "default":"",
+                "options": {"inputAttributes": {"rows":5}}
+              },
+
             },
-            "required": [ "productId", "productName" ]
+            "required":["name","structure"]
           }
-        },
+        }
       //  "custom-config-doc":{}
       }
       if(defaultSchemas[schemaName]){
         this.schemaSelected = false
-        let sch = defaultSchemas[schemaName]['schema']
+        let sch = defaultSchemas[schemaName]
         this.schema = {
           disable_collapse: true,
           disable_properties: true,
-          no_additional_properties: true,
-          schema:sch
+          no_additional_properties: true,    
+          disable_array_delete_all_rows:false,
+
+          ... sch
         } 
         console.log(this.schema)
         this.schemaSelected = true
@@ -157,6 +211,9 @@ export class RecordDataComponent {
     if(this.mode=='edit'){
 
     }
+  }
+  refreshNewForm(){
+    this.loadNewRecordForm()    
   }
 
   test(){
