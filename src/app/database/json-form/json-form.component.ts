@@ -34,7 +34,7 @@ export class JsonFormComponent {
     this.editor.on('change', () => {
       const value = this.editor.getValue();
       this.data = value
-      console.log(this.data)
+      //console.log(this.data)
       this.onDataChange.emit(this.data)
     })
   }
@@ -64,7 +64,7 @@ export class JsonFormComponent {
   ngOnChanges(sm: SimpleChanges) {
     if (sm['options']) {
       this.options = sm['options'].currentValue 
-      console.log(this.options)
+      // console.log(this.options)
       this.loadPage()
     }
   }

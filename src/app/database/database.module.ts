@@ -11,6 +11,7 @@ import { SearchRecordComponent } from './search-record/search-record.component';
 import { JsonFormComponent } from './json-form/json-form.component';
 import { RecordDataComponent } from './record-data/record-data.component';
 import { FormPreviewComponent } from './form-preview/form-preview.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 @NgModule({
   declarations: [
     DatabaseComponent,
@@ -20,7 +21,8 @@ import { FormPreviewComponent } from './form-preview/form-preview.component';
     SearchRecordComponent,
     JsonFormComponent,
     RecordDataComponent,
-    FormPreviewComponent
+    FormPreviewComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,

@@ -30,9 +30,9 @@ export class RecordDataComponent {
   }
 
 
-  schemaList = []
-  schema = {}
-  record = {}
+  schemaList:any = []
+  schema:any = {}
+  record:any = {}
 
   settingsSchema = {
     disable_collapse: true,
@@ -75,11 +75,20 @@ export class RecordDataComponent {
     }
   }
   async loadSchemaList(){
-    this.schemaList = []
+    this.schemaList = [
+      {
+        "name": "data-schema",
+        "label": "Data Schema"
+      },
+      {
+        "name": "custom-config-doc",
+        "label": "Config Doc"
+      } 
+    ]
     this.schemaSelected = false
 
     let data:any = await this.ds.dbGet(this.dbName,"data-schema-settings")
-    this.schemaList = data['data']['list']
+    this.schemaList = this.schemaList.concat(data['data']['list'])
   }
 
   async selectSchemaForNewRecord(schemaValue:any){
@@ -89,8 +98,9 @@ export class RecordDataComponent {
         this.schemaSelected=false
         throw new Error("Invalid Schema")
       } 
-      console.log(newValue)
+      // console.log(newValue)
       await this.loadSchema(newValue)
+      this.loadNewRecordData()
     } catch (error:any) {
       //this.message = error.message
     }
@@ -100,108 +110,18 @@ export class RecordDataComponent {
       this.schema = {}
       this.record = {}
       this.schemaSelected = false
-
-      const defaultSchemas:any = {
-        "data-schema":{
-          "schema": {
-            "type":"object",
-            "title":"New Data schema",
-            "properties":{
-              "name":{
-                "title":"Name",
-                "type":"string"
-              },
-              "label":{
-                "title":"Schema label",
-                "type":"string"
-              },
-              "structure":{
-                "type":"string",
-                "title":"JSON Schema Structure",
-                "format":"textarea",
-                "default":"{\"schema\":{}}",
-                "options": {
-                  "inputAttributes": {
-                    "rows":10
-                  }
-                }
-              },
-              "dataValidation":{
-                "title":"Data validation method",
-                "type":"string",
-                "format":"textarea",
-                "default":"(data)=>{return data}",
-                "options": {
-                  "inputAttributes": {
-                    "rows":5
-                  }
-                }
-              },
-              "primaryKey":{
-                "title":"Primary keys",
-                "description":"Include 'data.' before a field name",
-                "type": "array",
-                "format": "table",
-                "uniqueItems": true,
-                "items": {
-                  "title":"Field name",
-                  "type": "string",
-                },
-                "default":["_id"]
-              },
-              "view":{
-                "title":"Data view",
-                "type":"object",
-                "properties":{
-                  "short":{
-                    "type":"string",
-                    "format":"textarea",
-                    "default":"",
-                    "options": {"inputAttributes": {"rows":2}}
-                  },
-                  "full":{
-                    "type":"string",
-                    "format":"textarea",
-                    "default":"",
-                    "options": {"inputAttributes": {"rows":5}}
-                  }
-                }
-              },
-              "doc":{
-                "title":"Documentation",
-                "type":"string",
-                "format":"textarea",
-                "default":"",
-                "options": {"inputAttributes": {"rows":5}}
-              },
-
-            },
-            "required":["name","structure"]
-          }
-        }
-      //  "custom-config-doc":{}
-      }
-      if(defaultSchemas[schemaName]){
-        this.schemaSelected = false
-        let sch = defaultSchemas[schemaName]
-        this.schema = {
-          disable_collapse: true,
-          disable_properties: true,
-          no_additional_properties: true,    
-          disable_array_delete_all_rows:false,
-
-          ... sch
-        } 
-        console.log(this.schema)
-        this.schemaSelected = true
-
-      }else{
-
-      }
-
+      let dt = await this.ds.loadDataSchemas(this.dbName,schemaName)
+      console.log(dt)
+      this.schema = dt
+      this.schemaSelected = true
     } catch (error:any) { 
       //this.message = error.message
     }
+  }
+
+  loadNewRecordData(){
+    this.record =  this.ds.getNewRecord()
+    this.record['schema'] = this.schema['name']
   }
 
   loadMode(){
@@ -216,13 +136,31 @@ export class RecordDataComponent {
     this.loadNewRecordForm()    
   }
 
+  updateNewFormData(field:any,data:any){
+    //console.log(data)
+    if(field =='data'){
+      this.record['data'] = data
+    }
+    if(field=='settings'){
+      this.record['settings'] = data
+    }
+    //console.log(this.record)
+  }
+
   test(){
     try {
       this.ds.testDB(this.dbName)   
     } catch (error) {
       console.log(error)
     }
-   
   }
+  async addNewRecord(){
+    if(this.schemaSelected){
+      await this.ds.dbInsert(this.dbName,this.record)
 
+    }
+  }
+  async syncDB(){
+    await this.ds.syncDB(this.dbName)
+  }
 }
