@@ -24,12 +24,26 @@ export class SetupComponent {
       if(!newName){throw new Error("Empty")}
 
       let exists = this.dbSettings.list.find((itm: { name: string; }) =>{ return itm.name==newName})
+      let genKey = (length:any)=>{
+        // https://stackoverflow.com/a/1349426
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          counter += 1;
+        }
+        return result;
+      }
       if(!exists){
         this.dbSettings.list.push({
           name:newName,
           createdOn: new Date().toUTCString(),
-          sync:"",
-          settings:{}
+          settings:{
+            sync:"",
+            key:genKey(30)
+          }
         })
         this.ds.editDBList(this.dbSettings)
         this.ds.seedDefaultRecord(newName)

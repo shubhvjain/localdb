@@ -34,13 +34,17 @@
           <export-json title="DB Settings" [content]="dbSettings"></export-json>
         </div>
       </div>
-
       <div *ngIf="loaded">
         <ul>
           <li *ngFor="let d of dbSettings.list"> <code style="font-size: 20px;" >{{d.name}}</code>   &nbsp;  <a href="d/v/{{d.name}}/">Open</a>
-            <br>
-            Remote URL : <input type="text" name="" id="" [(ngModel)]="d.sync" >
-           
+            <details>
+              <summary>Details</summary>
+              <ul>
+                <li class="p-2">Remote URL : <input type="text" name="" id="" [(ngModel)]="d.settings.sync" ></li>
+                <li class="p-2">  Encryption Key : <input type="text" disabled name="" id="" [value]="d.settings.key" >
+                </li>
+              </ul>
+            </details>
           </li>
         </ul>
         <details>

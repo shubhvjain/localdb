@@ -1,59 +1,96 @@
 <div *ngIf="message.length > 0">
   {{ message }}
 </div>
-
-<div class="row">
-  <div class="col-8 mx-auto">
-    <div *ngIf="loaded">
-      <div *ngIf="mode == 'new'">
-        <div class="card1 bg-light mt-2 p-1">
-          <div class="card-body1 p-1">
-            <div class="d-flex bd-highlight">
-              <!-- <div class="flex-grow-1 bd-highlight">
-                <h3>Add a new record</h3>
-              </div> -->
-              <div class="bd-highlight">
+<div *ngIf="loaded">
+  <div *ngIf="mode == 'new'">
+    <div class="row p-1 bg-light">
+      <div class="col-lg-12">
+            <div class="d-flex">
+              <div>
                 <div class="form-group">
-                  <select (change)="selectSchemaForNewRecord($event)"  class="form-control" id="schemaSelectorDD">
+                  <select
+                    (change)="selectSchemaForNewRecord($event)"
+                    class="form-control  form-control-lg m-1"
+                    id="schemaSelectorDD"
+                  >
                     <option value="">Select a schema</option>
-                  <option *ngFor="let i of schemaList" value="{{ i['name'] }}">
-                    {{ i["label"] }}
-                  </option>
+                    <option
+                      *ngFor="let i of schemaList"
+                      value="{{ i['name'] }}"
+                    >
+                      {{ i["label"] }}
+                    </option>
                   </select>
                 </div>
+
               </div>
-              <div class="bd-highlight">
-                <button title="Refresh schmea ooptions" class="btn btn-sm" (click)="refreshNewForm()" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                </svg></button>
+              <div class="mr-auto p-2 ">
+                <button
+                title="Refresh schmea ooptions"
+                class="btn btn-sm"
+                (click)="refreshNewForm()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-arrow-clockwise"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
+                  />
+                  <path
+                    d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
+                  />
+                </svg>
+              </button>
               </div>
-              <div class="bd-highlight">
-                <button title="Refresh schmea ooptions" class="btn btn-sm" (click)="addNewRecord()"> Add new </button>
-              </div>
-              <div class="bd-highlight">
-                <button title="Sync database" class="btn btn-sm" (click)="syncDB()"> Sync </button>
+              <div class="p-2 ">
+                <button
+                  title="Refresh schmea ooptions"
+                  class="btn btn-lg btn-dark"
+                  (click)="addNewRecord()"
+                >
+                  Add new
+                </button>
               </div>
             </div>
-            
-          </div>
-        </div>
-
-        <div *ngIf="schemaSelected">
-          <details open>
-            <summary>Data</summary>
-            <json-form [options]="schema"  (onDataChange)="updateNewFormData('data',$event)"></json-form>
-          </details>
-          <details>
-            <summary>Settings</summary>
-            <json-form [options]="settingsSchema" (onDataChange)="updateNewFormData('settings',$event)"></json-form>
-          </details>
-          <details>
-            <summary>Attachments</summary>
-          </details>
-        </div>
       </div>
     </div>
-    <div *ngIf="!loaded">Loading page</div>
+    <div class="row p-1 m-1"  *ngIf="schemaSelected">
+      <div class="col-lg-8">
+
+        
+          <details open>
+            <summary>Data</summary>
+            <json-form
+              [options]="schema"
+              (onDataChange)="updateNewFormData('data', $event)"
+            ></json-form>
+          </details>
+         
+       
+      </div>
+      <div class="col-lg-4">
+
+        
+        
+        <details>
+          <summary>Settings</summary>
+          <json-form
+            [options]="settingsSchema"
+            (onDataChange)="updateNewFormData('settings', $event)"
+          ></json-form>
+        </details>
+        <details>
+          <summary>Attachments</summary>
+        </details>
+     
+    </div>
+    </div>
   </div>
 </div>
+<div *ngIf="!loaded">Loading page</div>
