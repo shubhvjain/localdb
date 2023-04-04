@@ -36,7 +36,7 @@ export class DatabaseService {
     let dbdets = this.getDBDetails(dbName)
     let localDB = new PouchDB(dbName)
     localDB.info().then(function (info) {
-      console.log(info);
+      //console.log(info);
     })
     let data = {
       sample: 1,
@@ -44,12 +44,12 @@ export class DatabaseService {
       dt: new Date().toISOString()
     }
     await localDB.post(data)
-    console.log()
+    //console.log()
     let remoteDB = new PouchDB(dbdets.sync)
     localDB.sync(remoteDB)
   }
 
-  async syncDB(dbName:string){
+  async syncDB(dbName: string) {
     let dbdets = this.getDBDetails(dbName)
     let localDB = new PouchDB(dbName)
     let remoteDB = new PouchDB(dbdets.sync)
@@ -97,7 +97,7 @@ export class DatabaseService {
     await this.generateDefaultIndex(dbName)
   }
 
-  
+
   async generateDefaultIndex(dbName: any) {
     try {
       let localDB = new PouchDB(dbName)
@@ -119,9 +119,8 @@ export class DatabaseService {
       const defaultSchemas: any = {
         "data-schema": {
           "name": "data-schema",
-          "primaryKey":["name"],
-          "dataValidation":`(data)=>{
-            data.schemaStringJSON = JSON.stringify(data.schemaString)
+          "primaryKey": ["name"],
+          "dataValidation": `(data)=>{
             data.name = data.name.trim().replace(\/\\s+\/g,'-').toLowerCase()
             return data
           }`,
@@ -215,22 +214,20 @@ export class DatabaseService {
         }
         return schema
       } else {
-        let localDB  = new PouchDB(dbName) 
-        let rec = await localDB.find({selector: {"data.name": schemaName,"schema":"data-schema"}})
-        if(rec.docs.length==0){throw new Error("Schema not found")}
-        let sch:any = rec.docs[0]
-        //console.log(sch['data']['schemaString'])
-        let schJ = sch['data']['schemaString']
-        let schemaScript = `return ${schJ}`
+        let localDB = new PouchDB(dbName)
+        let rec = await localDB.find({ selector: { "data.name": schemaName, "schema": "data-schema" } })
+        if (rec.docs.length == 0) { throw new Error("Schema not found") }
+        let sch: any = rec.docs[0]
+        let schemaScript = `return ${sch['data']['schemaString']}`
         const scriptMethod = new Function(schemaScript);
-        const queryData = scriptMethod() 
-        // console.log(queryData)
+        const queryData = scriptMethod()
+        sch['data'].schema = queryData['schema']
         let schema = {
           disable_collapse: true,
           disable_properties: true,
           no_additional_properties: true,
           disable_array_delete_all_rows: false,
-          schema : queryData.schema
+          ...sch['data']
         }
         return schema
       }
@@ -239,35 +236,34 @@ export class DatabaseService {
     }
   }
 
-  async addNewSchemaToList(dbName:string,newData:any){
+  async addNewSchemaToList(dbName: string, newData: any) {
     const localDB = new PouchDB(dbName)
-    let rec:any = await localDB.get("data-schema-settings")
+    let rec: any = await localDB.get("data-schema-settings")
     rec['data']['list'].push(newData)
     await localDB.put(rec)
+    // todo add index to db (use all primary keys)
   }
-  async duplicateCheck(dbName:string,schema:any,newRecord:any){
-    if(schema.primaryKey.length >0){
-      let query:any = {selector: {"schema":schema.name}}
-      schema.primaryKey.map((item: string | number)=>{
-        query.selector["data."+item] = newRecord['data'][item]
+
+  async duplicateCheck(dbName: string, schema: any, newRecord: any) {
+    if (schema.primaryKey.length > 0) {
+      let query: any = { selector: { "schema": schema.name } }
+      schema.primaryKey.map((item: string | number) => {
+        query.selector["data." + item] = newRecord['data'][item]
       })
       const localDB = new PouchDB(dbName)
       let search = await localDB.find(query)
-      if(search.docs.length>0){
-        throw new Error("Record already exists")
-      }
+      if (search.docs.length > 0) { throw new Error("Record already exists") }
     }
   }
 
   async dbInsert(dbName: string, newRecord: any) {
     try {
       await this.syncDB(dbName)
-      
       // validate data
       // primary key check
-      let schemaOption:any = await this.loadDataSchemas(dbName, newRecord['schema'])
+      let schemaOption: any = await this.loadDataSchemas(dbName, newRecord['schema'])
       //console.log(schemaOption)
-      await this.duplicateCheck(dbName,schemaOption,newRecord)
+      await this.duplicateCheck(dbName, schemaOption, newRecord)
       // let validData = 
       let validData = eval(schemaOption['dataValidation'])(newRecord.data)
       // console.log(validData)
@@ -275,10 +271,10 @@ export class DatabaseService {
       // insert data
       let localDB = new PouchDB(dbName)
       let newRec = await localDB.post(newRecord)
-      
+
       // do extra things  
-      if(newRecord['schema']=="data-schema"){
-        await this.addNewSchemaToList(dbName,{name: newRecord['data']['name'],label: newRecord['data']['label']})
+      if (newRecord['schema'] == "data-schema") {
+        await this.addNewSchemaToList(dbName, { name: newRecord['data']['name'], label: newRecord['data']['label'] })
       }
       await this.syncDB(dbName)
     } catch (error) {
