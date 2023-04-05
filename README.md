@@ -35,3 +35,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 </div>
 <div *ngIf="!loaded">Loading...</div>
 ```
+
+
+for attachments : https://json-editor.github.io/json-editor/multiple_upload_base64.html

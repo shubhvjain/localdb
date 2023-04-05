@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-search-record',
+  selector: 'search-record',
   templateUrl: './search-record.component.html',
   styleUrls: ['./search-record.component.css']
 })
 export class SearchRecordComponent {
+  @Input() dbName:string;
+  constructor(){this.dbName=''}
 
 }

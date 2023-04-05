@@ -10,8 +10,10 @@ import { DatabaseService } from '../../shared/database.service';
 export class ViewerComponent {
   constructor(private activatedRoute: ActivatedRoute,private ds : DatabaseService){}
   loaded:boolean = false
+  view="none"
   displayMsg = "Loading..."
   dbName:string = ""
+  appOptions={}
   ngOnInit() {
     this.activatedRoute.params.subscribe(async (params: Params) => {
       //this.selectedPageId = params['link']; 
@@ -20,12 +22,25 @@ export class ViewerComponent {
     });
   }
   processParams(params:any){
+    // params : dbname, appname, id
     // check if db is valid 
     try {
       let dbcheck = this.ds.getDBDetails(params.dbname)
       if(dbcheck){
         //console.log(dbcheck)
         this.dbName = params.dbname
+        this.appOptions = params
+        if(params.appname=='new'){
+          this.view = 'new'
+        }
+        if(params.appname=='view'){
+          if(params.id){
+            this.view = 'update-doc'
+          }else{
+            this.view = 'explore'
+          }
+        }
+
         this.loaded=true  
       }else{
         throw new Error("Invalid database")

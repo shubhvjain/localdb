@@ -75,20 +75,10 @@ export class RecordDataComponent {
     }
   }
   async loadSchemaList(){
-    this.schemaList = [
-      {
-        "name": "data-schema",
-        "label": "Data Schema"
-      },
-      {
-        "name": "custom-config-doc",
-        "label": "Config Doc"
-      } 
-    ]
+    this.schemaList = []
     this.schemaSelected = false
-
-    let data:any = await this.ds.dbGet(this.dbName,"data-schema-settings")
-    this.schemaList = this.schemaList.concat(data['data']['list'])
+    let sch = await this.ds.getSchemaList(this.dbName)
+    this.schemaList = sch
   }
 
   async selectSchemaForNewRecord(schemaValue:any){

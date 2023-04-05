@@ -175,6 +175,17 @@ export class DatabaseService {
                 "title": "Data view",
                 "type": "object",
                 "properties": {
+                  "table":{
+                    "description":"Columns to display in table view",
+                    "type":"array",
+                    "format":"table",
+                    "uniqueItems": true,
+                    "default": [],
+                    "items": {
+                      "title": "Field name",
+                      "type": "string",
+                    },
+                  },
                   "short": {
                     "type": "string",
                     "format": "textarea",
@@ -234,6 +245,50 @@ export class DatabaseService {
     } catch (error) {
       console.log(error)
     }
+  }
+  getDefaultSchemaList(){
+    return [
+      {
+        "name": "data-schema",
+        "label": "Data Schema"
+      },
+      {
+        "name": "topic",
+        "label": "Topic"
+      },
+      {
+        "name": "reference",
+        "label": "Reference"
+      },
+      {
+        "name": "word",
+        "label": "Word"
+      },
+      {
+        "name": "phrase",
+        "label": "Phrase"
+      },
+      {
+        "name": "script",
+        "label": "Script"
+      },
+      {
+        "name": "local-app",
+        "label": "Local webapp"
+      },
+      {
+        "name": "custom-config-doc",
+        "label": "Config Doc"
+      } 
+    ]
+  }
+  async getSchemaList(dbName:any){
+    let defaulsSchemaList = this.getDefaultSchemaList()
+    let schemaList = []
+    let data:any = await this.dbGet(dbName,"data-schema-settings")
+    schemaList = data['data']['list']
+    schemaList = schemaList.concat(defaulsSchemaList)
+    return schemaList
   }
 
   async addNewSchemaToList(dbName: string, newData: any) {

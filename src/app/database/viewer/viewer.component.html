@@ -16,12 +16,21 @@
 
 
 <div *ngIf="loaded">
-  <app-new-record [dbName]="dbName"></app-new-record> 
   
   <!-- <details>
     <summary>Preview</summary>
     <app-form-preview></app-form-preview>
   </details> -->
   
+  <ng-template [ngIf]="view=='new'">
+    <app-new-record [dbName]="dbName"></app-new-record> 
+  </ng-template>
+  <ng-template [ngIf]="view=='explore'">
+    <search-record [dbName]="dbName"></search-record> 
+  </ng-template>
+  <ng-template [ngIf]="view=='update-doc'">
+    <app-new-record [dbName]="dbName"></app-new-record> 
+  </ng-template>
+
 </div>
 <div *ngIf="!loaded"> {{displayMsg}}</div>
